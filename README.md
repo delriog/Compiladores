@@ -1,2 +1,2 @@
 # Compiladores
-Repositório criado para a disciplina de compiladores
+Repositório para a disciplina de compiladores
