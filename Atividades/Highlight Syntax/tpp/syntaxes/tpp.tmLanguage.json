@@ -1,0 +1,90 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "tpp",
+	"patterns": [
+		{
+			"include": "#palavrasChave"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#comentarios"
+		},
+		{
+			"include": "#constantes"
+		},
+		{
+			"include": "#funcoes"
+		},
+		{
+			"include": "#variaveis"
+		},
+		{
+			"include": "#operadores"
+		}
+	],
+	"repository": {
+		"palavrasChave": {
+			"patterns": [{
+				"name": "keyword.control.tpp",
+				"match": "\\b(se|então|senão|repita|até|fim)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.tpp",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.tpp",
+					"match": "\\\\."
+				}]
+		},
+		"comentarios": {
+			"patterns": [{
+				"name": "comment.line.character.tpp",
+				"begin": "{",
+				"end": "}"
+			}]
+		},
+		"constantes": {
+			"patterns": [
+				{
+					"name": "constant.numeric.tpp",
+					"match": "[0-9]"
+				},
+				{
+					"name": "constant.numeric.float.tpp",
+					"match": "[0-9]+|\\.|[0-9]"
+				}]
+		},
+		"funcoes": {
+			"patterns": [{
+				"name": "support.function.builtin.tpp",
+				"match": "\\b(escreva|retorna|leia)\\b\n"
+			}]
+		},
+		"variaveis": {
+			"patterns": [{
+				"name": "variable.language.tpp",
+				"match": "\\b(inteiro|flutuante)\\b"
+			}]
+		},
+		"operadores": {
+			"patterns": [{
+				"name": "keyword.operator.sizeof.tpp",
+				"match": "(?<![\\w$])(getTamanho)(?![\\w$])"
+			},
+			{
+				"name": "keyword.operator.comparison.tpp",
+				"match": "<>|<=|>=|==|>|<"
+			},
+			{
+				"name": "keyword.operator.tpp",
+				"match": "\\*|/|-|\\+"
+			}]
+		}
+	},
+	"scopeName": "source.tpp"
+}
