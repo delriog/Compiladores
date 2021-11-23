@@ -118,6 +118,7 @@ def p_declaracao(p):
 
 def p_declaracao_variaveis(p):
     """declaracao_variaveis : tipo DOIS_PONTOS lista_variaveis"""
+    global escopo
 
     pai = MyNode(name='declaracao_variaveis', type='DECLARACAO_VARIAVEIS')
     p[0] = pai
@@ -158,7 +159,7 @@ def p_declaracao_funcao_error(p):
     """declaracao_funcao :  error 
     """
     print("Erro ao definir a função")
-    error_line = p.lineno(1)
+    error_line = p.lineno(2)
     father = MyNode(name='ERROR::{}'.format(error_line), type='ERROR')
     logging.error(
         "Erro ao definir a função na linha{}".format(error_line))
@@ -332,12 +333,12 @@ def p_cabecalho(p):
         tipo_function = 'vazio'
 
     # nomes dos parametros e seus tipos
-    lista_parametros = encontrar_todos_nos(p.slice[3].value, list(), 'parametro') #list_parameter
+    lista_parametros = encontrar_todos_nos(p.slice[3].value, list(), 'parametro')
     num_var = len(lista_parametros)
 
     nome_parametro = [] 
     for parametro in lista_parametros:
-        nome_parametro.append(encontrar_todos_nos(parametro, list(), 'ID')[0].children[0].label)
+        nome_parametro.append(encontrar_todos_nos(parametro, list(), 'id')[0].children[0].label)
 
     inicio_linha = p.lineno(2) 
     final_linha = p.slice[-1].lineno 
@@ -359,8 +360,9 @@ def p_cabecalho(p):
             tipo = 'flutuante'
         elif len(encontrar_todos_nos(no, list(), 'ID')) > 0:
             ids = encontrar_todos_nos(no, list(), 'ID')
-            for id in ids:
-                label_id = id.children[0].label
+            
+            for id_chamada in ids:
+                label_id = id_chamada.children[0].label
 
                 if label_id in function_list:
                     if label_id == nome_function:
@@ -432,7 +434,7 @@ def p_parametro(p):
     """parametro : tipo DOIS_PONTOS ID
                 | parametro ABRE_COLCHETE FECHA_COLCHETE
     """
-
+    
     pai = MyNode(name='parametro', type='PARAMETRO')
     p[0] = pai
     p[1].parent = pai
@@ -451,7 +453,7 @@ def p_parametro(p):
 
         filho3 = MyNode(name='fecha_colchete', type='FECHA_COLCHETE', parent=pai)
         filho_sym3 = MyNode(name=']', type='SIMBOLO', parent=filho3)
-        p[3] = filho3
+    p[3] = filho3
 
     nome_var = p.slice[-1].value.children[0].label
     tipo_var = p.slice[1].value.children[0].children[0].label
@@ -472,18 +474,12 @@ def p_parametro_error(p):
                 | parametro error FECHA_COLCHETE
                 | parametro ABRE_COLCHETE error
     """
-
+    global parser
     print("Erro de parâmetro ou colchete.")
 
     if p[2] == ':':
         print("Erro:p[0]:{p0}, p[1]:{p1}, p[2]:{p2}".format(
                 p0=p[0], p1=p[1], p2=p[2]))
-        error_line = p.lineno(2)
-        father = MyNode(name='ERROR::{}'.format(error_line), type='ERROR')
-        logging.error(
-            "Syntax error parsing index rule at line {}".format(error_line))
-        parser.errok()
-        p[0] = father
     else:
         error_line = p.lineno(2)
         father = MyNode(name='ERROR::{}'.format(error_line), type='ERROR')
@@ -579,12 +575,6 @@ def p_se_error(p):
     if len(p) == 8:
         print("Erro:p[0]:{p0}, p[1]:{p1}, p[2]:{p2}, p[3]:{p3}, p[3]:{p4}, p[3]:{p5}, p[3]:{p6}, p[7]:{p7}".format(
                 p0=p[0], p1=p[1], p2=p[2], p3=p[3], p4=p[4], p5=p[5], p6=p[6], p7=p[7]))
-        error_line = p.lineno(2)
-        father = MyNode(name='ERROR::{}'.format(error_line), type='ERROR')
-        logging.error(
-            "Syntax error parsing index rule at line {}".format(error_line))
-        parser.errok()
-        p[0] = father
     else:
         print("Erro:p[0]:{p0}, p[1]:{p1}, p[2]:{p2}, p[3]:{p3}, p[3]:{p4}, p[3]:{p5}".format(
                 p0=p[0], p1=p[1], p2=p[2], p3=p[3], p4=p[4], p5=p[5]))
@@ -619,7 +609,7 @@ def p_repita_error(p):
     """repita : error corpo ATE expressao
             | REPITA corpo error expressao
     """
-
+    global parser
     print("Erro na expressão REPITA.")
 
     print("Erro:p[0]:{p0}, p[1]:{p1}, p[2]:{p2}, p[3]:{p3}, p[3]:{p4}".format(
@@ -667,12 +657,12 @@ def p_leia(p):
     filho_sym4 = MyNode(name=')', type='SIMBOLO', parent=filho4)
     p[4] = filho4
     linha = p.lineno(2)
-    get_variavel(p.slice[0].value, line, False)
+    get_variavel(p.slice[0].value, linha, False)
 
 def p_leia_error(p):
     """leia : LEIA ABRE_PARENTESE error FECHA_PARENTESE
     """
-
+    global parser
     print("Erro na leitura.")
 
     print("Erro:p[0]:{p0}, p[1]:{p1}, p[2]:{p2}, p[3]:{p3}, p[3]:{p4}".format(
@@ -930,19 +920,12 @@ def p_fator(p):
 def p_fator_error(p):
     """fator : ABRE_PARENTESE error FECHA_PARENTESE
         """
-
+    global parser
     print("Erro na definicao do fator.")
 
     if len(p) > 2:
         print("Erro:p[0]:{p0}, p[1]:{p1}, p[2]:{p2}, p[3]:{p3}".format(
                 p0=p[0], p1=p[1], p2=p[2], p3=p[3]))
-        error_line = p.lineno(2)
-        father = MyNode(name='ERROR::{}'.format(error_line), type='ERROR')
-        logging.error(
-            "Syntax error parsing index rule at line {}".format(error_line))
-        parser.errok()
-        p[0] = father
-    
     else:
         print("Erro:p[0]:{p0}, p[1]:{p1}".format(
                 p0=p[0], p1=p[1]))
@@ -1039,7 +1022,7 @@ def p_error(p):
 
 
 def main():
-    global root
+    global root, parser, tokens
     root = None
     # argv[1] = 'teste.tpp'
     aux = argv[1].split('.')
