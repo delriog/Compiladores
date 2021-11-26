@@ -83,7 +83,7 @@ def checa_vetor_variaveis(var_list, message_list):
                     if dimensao[1] != 'NUM_INTEIRO':
                         tamanho_vetor = float(dimensao[0])
                         mensagem = ('ERROR',
-                                   f'Erro: Índice de array ‘{variavel[0]}’ não inteiro.')
+                                   f'Erro na linha {variavel[5]}: Índice de array ‘{variavel[0]}’ não inteiro.')
                         message_list.append(mensagem)
                     else:
                         tamanho_vetor = int(dimensao[0])
@@ -92,13 +92,13 @@ def checa_vetor_variaveis(var_list, message_list):
                     if len(numero) > 0:
                         if len(encontra_todos_nos(numero[0], 'NUM_PONTO_FLUTUANTE', list())) > 0:
                             mensagem = ('ERROR',
-                                       f'Erro: Índice de array ‘{variavel[0]}’ não inteiro.')
+                                       f'Erro na linha {variavel[5]}: Índice de array ‘{variavel[0]}’ não inteiro.')
                             message_list.append(mensagem)
                         else:
                             numero = int(numero[0].descendants[-1].label)
                             if numero > tamanho_vetor - 1:
                                 mensagem = ('ERROR',
-                                           f'Erro: Índice de array ‘{variavel[0]}’ fora do intervalo (out of range).')
+                                           f'Erro na linha {variavel[5]}: Índice de array ‘{variavel[0]}’ fora do intervalo (out of range).')
                                 message_list.append(mensagem)
 
 def checa_tipo_atribuicao(var_list, message_list, root):
@@ -141,7 +141,7 @@ def checa_chamada_variaveis(var_list, message_list, root):
                 encontra = True
                 if len(variavel[-1]) == 0:
                     mensagem = ('WARNING',
-                               f'Aviso: Variável ‘{id_lido}’ declarada e não utilizada. ')
+                               f'Aviso na linha {variavel[5]}: Variável ‘{id_lido}’ declarada e não utilizada. ')
                     message_list.append(mensagem)
 
             if not encontra:
@@ -149,20 +149,20 @@ def checa_chamada_variaveis(var_list, message_list, root):
                     if variavel[4] == 'global':
                         if len(variavel[-1]) == 0:
                             mensagem = ('WARNING',
-                                       f'Aviso: Variável ‘{id_lido}’ declarada e não utilizada. ')
+                                       f'Aviso na linha {variavel[5]}: Variável ‘{id_lido}’ declarada e não utilizada. ')
                             message_list.append(mensagem)
 
     for elemento in var_list:
         for variavel in var_list[elemento]:
             if len(variavel[-1]) == 0:
                 mensagem = ('WARNING',
-                           f'Aviso: Variável ‘{variavel[0]}’ declarada e não utilizada. ')
+                           f'Aviso na linha {variavel[5]}: Variável ‘{variavel[0]}’ declarada e não utilizada. ')
                 message_list.append(mensagem)
 
             if len(var_list[elemento]) > 1:
                 for variavel_duplicada in var_list[elemento]:
                     if variavel_duplicada != variavel and variavel_duplicada[4] == variavel[4]:
-                        mensagem = ('WARNING', f'Aviso: Variável ‘{variavel_duplicada[0]}‘ já declarada anteriormente.')
+                        mensagem = ('WARNING', f'Aviso na linha {variavel[5]}: Variável ‘{variavel_duplicada[0]}‘ já declarada anteriormente.')
                         message_list.append(mensagem)
 
 def checa_chamada_funcoes(function_list, message_list):
@@ -171,13 +171,13 @@ def checa_chamada_funcoes(function_list, message_list):
         for funcao in function_list[elemento]:
             if not funcao[-2]:
                 mensagem = ('ERROR',
-                           f'Erro: Chamada a função {elemento} que não foi declarada.')
+                           f'Erro na linha {funcao[-1][0][0]}: Chamada a função {elemento} que não foi declarada.')
                 message_list.append(mensagem)
 
             else:
                 if len(funcao[-1]) == 0 and elemento != 'principal':
                     mensagem = ('WARNING',
-                               f'Aviso: Função {elemento} declarada, mas não utilizada.')
+                               f'Aviso na linha {funcao[5]}: Função {elemento} declarada, mas não utilizada.')
                     message_list.append(mensagem)
                 else:
                     chamadas = 0
@@ -194,12 +194,12 @@ def checa_chamada_funcoes(function_list, message_list):
 
                     if chamadas == 0:
                         mensagem = ('WARNING',
-                                   f'Aviso: Função {elemento} declarada, mas não utilizada.')
+                                   f'Aviso na linha {funcao[5]}: Função {elemento} declarada, mas não utilizada.')
                         message_list.append(mensagem)
 
                     elif recursao > 0:
                         mensagem = ('WARNING',
-                                   f'Aviso: Chamada recursiva para {elemento}.')
+                                   f'Aviso na linha {funcao[5]}: Chamada recursiva para {elemento}.')
                         message_list.append(mensagem)
 
                 for chamada in funcao[-1]:
@@ -207,11 +207,11 @@ def checa_chamada_funcoes(function_list, message_list):
 
                     if len(lista_parametros) > funcao[2]:
                         mensagem = ('ERROR',
-                                   f'Erro: Chamada à função {funcao[0]} com número de parâmetros maior que o declarado.')
+                                   f'Erro na linha {funcao[-1][0][0]}: Chamada à função {funcao[0]} com número de parâmetros maior que o declarado.')
                         message_list.append(mensagem)
                     elif len(lista_parametros) < funcao[2]:
                         mensagem = ('ERROR',
-                                   f'Erro: Chamada à função {funcao[0]} com número de parâmetros menor que o declarado.')
+                                   f'Erro na linha {funcao[-1][0][0]}: Chamada à função {funcao[0]} com número de parâmetros menor que o declarado.')
                         message_list.append(mensagem)
                     else:
                         parametros = []
@@ -251,29 +251,29 @@ def checa_retorno(function_list, message_list):
                 if len(retorna_tipo) > 0:
                     if len(retorna_tipo) > 1:
                         mensagem = ('ERROR',
-                                   f'Erro: Função {elemento} deveria retornar vazio, mas retorna {retorna_tipo[0]} e {retorna_tipo[1]}.')
+                                   f'Erro na linha {function[6]-1}: Função {elemento} deveria retornar vazio, mas retorna {retorna_tipo[0]} e {retorna_tipo[1]}.')
                     else:
                         mensagem = ('ERROR',
-                                   f'Erro: Função {elemento} deveria retornar vazio, mas retorna {retorna_tipo[0]}.')
+                                   f'Erro na linha {function[6]-1}: Função {elemento} deveria retornar vazio, mas retorna {retorna_tipo[0]}.')
             elif tipo_funcao == 'inteiro':
                 if len(retorna_tipo) == 0:
                     mensagem = ('ERROR',
-                               f'Erro: Função {elemento} deveria retornar inteiro, mas retorna vazio.')
+                               f'Erro na linha {function[6]-1}: Função {elemento} deveria retornar inteiro, mas retorna vazio.')
                 else:
                     for tipo_retorno in retorna_tipo:
                         if tipo_retorno != 'inteiro' and tipo_retorno != 'ERROR':
                             mensagem = ('ERROR',
-                                       f'Erro: Função {elemento} deveria retornar inteiro, mas retorna flutuante.')
+                                       f'Erro na linha {function[6]-1}: Função {elemento} deveria retornar inteiro, mas retorna flutuante.')
                             break
             elif tipo_funcao == 'flutuante':
                 if len(retorna_tipo) == 0:
                     mensagem = ('ERROR',
-                               f'Erro: Função {elemento} deveria retornar flutuante, mas retorna vazio.')
+                               f'Erro na linha {function[6]-1}: Função {elemento} deveria retornar flutuante, mas retorna vazio.')
                 else:
                     for tipo_retorno in retorna_tipo:
                         if tipo_retorno != 'flutuante' and tipo_retorno != 'ERROR':
                             mensagem = ('ERROR',
-                                       f'Erro: Função {elemento} deveria retornar flutuante, mas retorna inteiro.')
+                                       f'Erro na linha {function[6]-1}: Função {elemento} deveria retornar flutuante, mas retorna inteiro.')
                             break
 
             if mensagem != '':
@@ -292,7 +292,7 @@ def checa_principal(function_list, message_list):
         for chamada in function_list['principal'][0][-1]:
             if not inicio_linha <= chamada[0] < finao_linha:
                 mensagem_erro = (
-                    'ERROR', f'Erro: Chamada para a função principal não permitida.')
+                    'ERROR', f'Erro na linha {chamada[0]}: Chamada para a função principal não permitida.')
                 message_list.append(mensagem_erro)
 
 def checa_semantica(function_list, var_list, message_list, tabela_funcoes, tabela_variaveis, root):
@@ -328,7 +328,6 @@ def gera_tabela_variaveis(list, header, list_index):
             for index in list_index:
                 if index == 3:
                     dim_tam = []
-                    print(func[index])
                     for j in range(len(func[index])):
                         if func[index][j][1] == 'NUM_PONTO_FLUTUANTE':
                             value = float(func[index][j][0])
