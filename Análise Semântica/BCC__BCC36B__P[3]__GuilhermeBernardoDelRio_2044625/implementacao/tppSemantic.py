@@ -119,12 +119,12 @@ def checa_tipo_atribuicao(var_list, message_list, root):
 
                 tipo_diferente = variavel[1]
                 mensagem = ('WARNING',
-                           f'Aviso: Coerção implícita do valor de ‘{variavel[0]}’.')
+                           f'Aviso: Coerção implícita do valor atribuído para ‘{esquerda[0]}’, variavel {esquerda[0]} {esquerda[1]} recebendo um {variavel[-1]}.')
                 message_list.append(mensagem)
 
         if tipo_diferente and tipo_diferente != esquerda[1]:
             mensagem = ('WARNING',
-                       f'Aviso: Atribuição de tipos distintos ‘{esquerda[0]}’ {esquerda[1]} e ‘expressão’ {tipo_diferente}')
+                       f'Aviso: Atribuição de tipos distintos ‘{esquerda[0]}’ {esquerda[1]} e ‘{variavel[0]}’ {tipo_diferente}')
             message_list.append(mensagem)
 
 def checa_chamada_variaveis(var_list, message_list, root):
